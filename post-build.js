@@ -10,7 +10,15 @@ const BUILD_DIR = path.resolve('./dist/');
 (async function() {
   async function rimraf(pathname) {
     const stat = await fs.promises.stat(pathname);
-    if(!stat.isDirectory()) return fs.promises.unlink(pathname);
+
+    if(!stat.isDirectory()) {
+      try {
+        await fs.promises.unlink(pathname);
+      } catch (err) {
+        if(err.code === 'ENOENT') return;
+        throw err;
+      }
+    }
 
     const contents = await fs.promises.readdir(pathname);
 
@@ -23,7 +31,12 @@ const BUILD_DIR = path.resolve('./dist/');
         continue;
       }
 
-      await fs.promises.unlink(currentPath);
+      try {
+        await fs.promises.unlink(currentPath);
+      } catch (err) {
+        if(err.code === 'ENOENT') continue;
+        throw err;
+      }
     }
   }
 
