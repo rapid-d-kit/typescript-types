@@ -142,3 +142,5 @@ yarn*
 
 npm-publish.sh
 *.gign*
+
+__build__
